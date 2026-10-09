@@ -407,7 +407,9 @@
       document.getElementById("qr-frame").innerHTML = `<p class="qr-missing">UPI QR image not found.<br>Add your QR image at <b>${esc(cfg.upiQrImage)}</b>.</p>`;
     };
     if (img.complete && img.naturalWidth === 0 && !useEmbedded(img)) showMissing();
-    img.addEventListener("error", () => { if (img.dataset.fallback) showMissing(); });
+    // 1st error = file missing (global handler swaps in the built-in copy); 2nd error = even that failed.
+    let errors = 0;
+    img.addEventListener("error", () => { errors += 1; if (errors >= 2) showMissing(); });
   }
 
   function successView() {
